@@ -97,11 +97,3 @@ export interface IBasket {
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
-
-export interface IActions {
-	onClick: (event: MouseEvent) => void;
-}
-
-export interface ISuccessActions {
-	onClick: () => void;
-}
