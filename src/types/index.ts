@@ -1,81 +1,66 @@
-//Типы и интерфейсы базовых классов
-
-export type EventName = string | RegExp;
-export type Subscriber = Function;
-export type EmitterEvent = {
-	eventName: string;
-	data: unknown;
-};
-
-export interface IEvents {
-	on<T extends object>(event: EventName, callback: (data: T) => void): void;
-	emit<T extends object>(event: string, data?: T): void;
-	trigger<T extends object>(
-		event: string,
-		context?: Partial<T>
-	): (data: T) => void;
-}
-
-//Ответ от сервера
-
-export type ApiListResponse<Type> = {
-	total: number;
-	items: Type[];
-};
-
-//Запросы на сервер
-
-export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
-
-//Методы для Api
-
-export interface ILarekApi {
-	getCardsList: () => Promise<ICard[]>;
-	orderProducts: (order: IOrder) => Promise<IOrderSuccess>;
-}
-
-//Интерфейсы моделей данных
-
+// Интерфейсы моделей данных
 export interface IAppStatus {
 	catalog: ICard[];
 	basket: ICard[];
 	preview: string | null;
-	delivery: IOrdersDelivery | null;
-	contact: IOrdersContacts | null;
+	delivery: IOrderFormDelivery | null;
+	contact: IContacts | null;
 	order: IOrder | null;
 }
 
-//Интерфейсы компонентов представления
-
+// Интерфейс описания главной страницы
 export interface IPage {
 	counter: number;
 	catalog: HTMLElement[];
 	locked: boolean;
 }
 
-export interface ICard {
+// Интерфейс описание товара
+export interface IProductItem {
 	id: string;
 	description: string;
 	image: string;
 	title: string;
 	category: string;
 	price: number | null;
-	count?: string;
-	buttonText?: string;
 }
 
-export interface IOrdersDelivery {
+// Интерфейс описание карточки товара
+export interface ICard extends IProductItem {
+	buttonText: string;
+	itemCount: number | string;
+}
+
+export interface IActions {
+	onClick: (event: MouseEvent) => void;
+}
+
+// Модальное окно
+export interface IModalData {
+	content: HTMLElement;
+}
+
+export type PaymentMethod = 'online' | 'cash';
+
+// Типа оплаты и адреса доставки
+export interface IOrderFormDelivery {
 	payment: string;
 	address: string;
 }
 
-export interface IOrdersContacts {
+// Контактные данные
+export interface IOrderFormContacts {
 	email: string;
 	phone: string;
 }
 
-export interface IOrder extends IOrdersDelivery, IOrdersContacts {
+// Список товаров
+export interface IOrder extends IOrderFormDelivery, IOrderFormContacts {
 	total: number | null;
+	items: string[];
+}
+
+export interface IContacts extends IOrderFormContacts {
 	items: string[];
 }
 
@@ -84,6 +69,7 @@ export interface IOrderSuccess {
 	total: number | null;
 }
 
+// Оформление заказа
 export interface ISuccess {
 	image: string;
 	title: string;
@@ -91,9 +77,23 @@ export interface ISuccess {
 	total: number | null;
 }
 
-export interface IBasket {
-	items: HTMLElement[];
-	total: number;
+export interface ISuccessActions {
+	onClick: () => void;
 }
 
-export type FormErrors = Partial<Record<keyof IOrder, string>>;
+// Корзина
+export interface IBasket {
+	items: HTMLElement[];
+	total: number | string;
+	selected: string[];
+}
+
+// Состояние полей формы
+export interface IFormState {
+	valid: boolean;
+	errors: string[];
+}
+
+export type FormValidateErrorsDelivery = Partial<Record<keyof IOrder, string>>;
+export type FormValidateErrorsContacts = Partial<Record<keyof IContacts, string>>;
+
