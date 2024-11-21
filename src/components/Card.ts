@@ -1,30 +1,31 @@
 import { Component } from './base/Component';
 import { ICard, IActions } from '../types';
+import { ensureElement } from '../utils/utils';
 
 export const categoryColour: { [key: string]: string } = {
 	'софт-скил': 'card__category_soft',
 	'хард-скил': 'card__category_hard',
-	'другое': 'card__category_other',
-	'дополнительное': 'card__category_additional',
-	'кнопка': 'card__category_button',
+	другое: 'card__category_other',
+	дополнительное: 'card__category_additional',
+	кнопка: 'card__category_button',
 };
 
 export class Card extends Component<ICard> {
 	protected _index: HTMLElement;
-	protected _image: HTMLImageElement;
+	protected _image?: HTMLImageElement;
 	protected _title: HTMLElement;
-	protected _category: HTMLElement;
-	protected _description: HTMLElement;
+	protected _category?: HTMLElement;
+	protected _description?: HTMLElement;
 	protected _price: HTMLElement;
-	protected _button: HTMLElement;
+	protected _button?: HTMLElement;
 
 	constructor(container: HTMLElement, actions?: IActions) {
 		super(container);
 
 		this._image = container.querySelector('.card__image');
-		this._title = container.querySelector('.card__title');
+		this._title = ensureElement<HTMLElement>('.card__title', this.container);
 		this._description = container.querySelector('.card__text');
-		this._price = container.querySelector('.card__price');
+		this._price = ensureElement<HTMLElement>('.card__price', this.container);
 		this._category = container.querySelector('.card__category');
 		this._button = container.querySelector('.card__button');
 		this._index = container.querySelector('.basket__item-index');
@@ -74,9 +75,9 @@ export class Card extends Component<ICard> {
 		}
 	}
 
-	set buttonText(status: string) {
+	set button(status: string) {
 		if (status === 'basket') {
-			this.setText(this._button, 'Удалить');
+			this.setText(this._button, 'Удалить из корзины');
 		} else {
 			this.setText(this._button, 'В корзину');
 		}
@@ -88,9 +89,5 @@ export class Card extends Component<ICard> {
 
 	set index(value: string) {
 		this.setText(this._index, value);
-	}
-
-	get index(): string {
-		return this._index.textContent || '';
 	}
 }

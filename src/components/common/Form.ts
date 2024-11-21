@@ -50,16 +50,4 @@ export class Form<T> extends Component<IFormState> {
 		Object.assign(this, inputs);
 		return this.container;
 	}
-
-	toggleClass(element: HTMLElement, className: string, shouldAdd?: boolean) {
-		if (shouldAdd === undefined) {
-			element.classList.toggle(className);
-		} else {
-			if (shouldAdd) {
-				element.classList.add(className);
-			} else {
-				element.classList.remove(className);
-			}
-		}
-	}
 }
