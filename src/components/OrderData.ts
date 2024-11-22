@@ -1,10 +1,8 @@
-import { PaymentMethod, ICard, IOrder, OrderForm } from '../types';
+import { PaymentMethod, IOrder, OrderForm } from '../types';
 
 import { IEvents } from './base/events';
 
 export class OrderData {
-	items: ICard[] = [];
-	preview: ICard;
 	order: IOrder = {
 		payment: 'card',
 		email: '',
@@ -15,16 +13,6 @@ export class OrderData {
 	formErrors: Partial<Record<keyof OrderForm, string>> = {};
 
 	constructor(protected events: IEvents) {}
-
-	setCatalog(items: ICard[]) {
-		this.items = items;
-		this.events.emit('items:changed', this.items);
-	}
-
-	setPreview(item: ICard) {
-		this.preview = item;
-		this.events.emit('preview:changed', this.preview);
-	}
 
 	setPayment(method: PaymentMethod) {
 		this.order.payment = method;
@@ -40,10 +28,6 @@ export class OrderData {
 		if (this.validateForm()) {
 			this.events.emit('order:ready', this.order);
 		}
-	}
-
-	getOrderId() {
-		return this.items.map((item) => item.id);
 	}
 
 	validateForm() {

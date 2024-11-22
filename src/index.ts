@@ -2,6 +2,7 @@ import './scss/styles.scss';
 
 import { OrderData } from './components/OrderData';
 import { BasketData } from './components/BasketData';
+import { CardData } from './components/CardData';
 import { EventEmitter } from './components/base/events';
 import { LarekApi } from './components/LarekAPI';
 import './scss/styles.scss';
@@ -29,6 +30,7 @@ const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
 // Модель данных приложения
+const cardData = new CardData(events);
 const orderData = new OrderData(events);
 const basketData = new BasketData(events);
 
@@ -41,7 +43,7 @@ const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
 
 // Вывод каталога товаров на главную страницу
 events.on('items:changed', () => {
-	page.catalog = orderData.items.map((item) => {
+	page.catalog = cardData.items.map((item) => {
 		const card = new Card(cloneTemplate(cardCatalogTemplate), {
 			onClick: () => events.emit('card:select', item),
 		});
@@ -51,13 +53,14 @@ events.on('items:changed', () => {
 			image: item.image,
 			price: item.price,
 		});
+		
 	});
 });
 
 
 // Открыть карточку товара
 events.on('card:select', (item: ICard) => {
-	orderData.setPreview(item);
+	cardData.setPreview(item);
 });
 
 // Изменение в выбранной карточке
@@ -90,7 +93,7 @@ events.on('basket:open', () => {
 events.on('basket:changed', () => {
 	page.counter = basketData.basket.items.length;
 	basket.items = basketData.basket.items.map((id, index) => {
-		const item = orderData.items.find((item) => item.id === id);
+		const item = cardData.items.find((item) => item.id === id);
 		console.log(item);
 		const card = new Card(cloneTemplate(cardBasketTemplate), {
 			onClick: () => basketData.deleteBasket(item),
@@ -165,14 +168,12 @@ events.on('contacts:submit', () => {
 			const success = new Success(cloneTemplate(successTemplate), {
 				onClick: () => {
 					modal.close();
-					basketData.clearBasket();
 				},
 			});
-			console.log(result);
-
 			modal.render({
 				content: success.render(result),
 			});
+			basketData.clearBasket();
 		})
 		.catch((err) => {
 			console.log(err);
@@ -192,7 +193,7 @@ events.on('modal:close', () => {
 // Получаем каталог товаров с сервера
 api
 	.getCardsList()
-	.then(orderData.setCatalog.bind(orderData))
+	.then(cardData.setCatalog.bind(cardData))
 	.catch((err) => {
 		console.error(err);
 	});
